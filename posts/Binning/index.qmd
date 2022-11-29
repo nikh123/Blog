@@ -1,0 +1,37 @@
+---
+title: "Binning"
+author: "Nikhil"
+date: "2022-10-29"
+categories: [R, application]
+---
+When we have a big dataset and we want to make the analysis easier we can use the binning which is basically classifying the data into the number of bins we want. The number of bins depend on the analysis you're performing.  
+
+# *Application*  
+
+To apply this technique we will be using the command `cut("dataset", "number of bins", labels = "names of the bins")`
+
+It is fairly straight forward to use. 
+
+You can use assign this as a variable and then use it to make barplots, graphs, etc..  
+
+For example, in one of my assignments we were trying to see the correlation between grades and the mother's education and we applied the binning to the grades. We classed them into 4 bins and then using the code below we created a ggplot which helps us analyse. 
+```
+library(ggplot2)
+ggplot() +
+geom_bar( data = my_data,
+aes( x = factor(medu),
+fill = factor( G3 ) ),
+position = "stack" ) +
+scale_x_discrete( "medu" ) +
+scale_y_continuous( "G3" ) +
+guides( fill = guide_legend( title = "Grades" ) )
+ggplot() +
+geom_bar( data = my_data,
+aes( x = factor(medu),
+fill = factor( G3 ) ),
+position = "fill" ) +
+scale_x_discrete( "medu" ) +
+scale_y_continuous( "G3" ) +
+guides( fill = guide_legend( title = "Grades" ))
+``` 
+![](Screenshot 2022-11-28 at 23.56.26.png)
