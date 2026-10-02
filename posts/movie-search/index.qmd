@@ -1,0 +1,38 @@
+---
+title: "Movie Search app on Google Cloud"
+author: "Nikhil"
+date: "2026-03-06"
+categories: [Python, SQL, Google Cloud]
+---
+This was my first assignment for the Cloud and Advanced Analytics course: a Streamlit app to search a movie database stored in BigQuery. It later grew into my [CineMatch](../cinematch/index.qmd) recommender.  
+
+[Live app](https://movie-app-97118476415.europe-west6.run.app)
+
+# *Features*  
+
+- Search by title  
+- Filter by language, genre, release year and average rating  
+- Poster, overview, cast and runtime from the TMDB API  
+
+# *The SQL behind it*  
+
+Every filter you set adds a condition to one BigQuery query, and filters you leave empty are skipped. The rating filter is the most interesting one because it needs a `JOIN` with the ratings table and a `HAVING` on the average:
+```
+SELECT m.title, m.genres, m.release_year,
+       ROUND(AVG(r.rating), 2) AS avg_rating,
+       COUNT(r.rating) AS num_ratings
+FROM movies_db m
+JOIN movie_ratings r ON m.movieId = r.movieId
+WHERE m.language = 'en'
+  AND m.genres LIKE '%Comedy%'
+  AND m.release_year >= 2000
+GROUP BY m.movieId, m.title, m.genres, m.release_year
+HAVING AVG(r.rating) >= 4
+ORDER BY avg_rating DESC
+LIMIT 50
+```
+All the SQL that runs is printed in the terminal, which made debugging much easier.
+
+# *Deploying it*  
+
+The app is packaged with a Dockerfile and deployed on Google Cloud Run. The `.dockerignore` makes sure no credentials end up in the image.

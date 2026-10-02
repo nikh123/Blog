@@ -1,0 +1,49 @@
+---
+title: "Lazy Librarian: recommending library books"
+author: "Nikhil"
+date: "2025-12-14"
+categories: [Python, Machine Learning, Kaggle]
+---
+For the Data Science and Machine Learning course at UNIL we took part in the Lazy Librarian Kaggle competition. The goal was to recommend the 10 books each library user is most likely to borrow next, scored with MAP@10. In three weeks and 60+ submissions we went from 0.02 to **0.16940**.
+
+# *The data*  
+
+| | |
+|---|---|
+| Interactions | 87,047 |
+| Users | 7,838 |
+| Books | 15,291 |
+| Re-borrows | **38.4%** |
+
+# *Why the usual approach failed*  
+
+We started the textbook way: popularity, ItemKNN, content-based and ALS, and like most recommenders we removed the books a user had already read. Everything scored around 0.02.  
+
+So we stopped building models and looked at the data instead. Almost 4 out of 10 borrows were people taking out a book they had **already borrowed**: students re-reading textbooks, fans re-reading favourites, parents borrowing the same children's book again. By filtering seen items we were deleting the right answers! Just keeping them pushed ItemKNN from 0.020 to 0.097.
+
+# *Recency matters*  
+
+The next step was simply recommending each user's own books, with the recent ones weighted higher:
+```
+score = Σ 0.9^(n-1-i)   # most recent = 1.0, previous = 0.9, then 0.81, ...
+```
+This simple trick alone scored 0.15951, better than any of the complex models.
+
+# *The final model*  
+
+The final model, EnhancedHybridV3, mixes four parts:  
+
+- **Recency (60%)**: your recent borrows, re-borrows included  
+- **ItemKNN (15%)**: "users who borrowed X also borrowed Y"  
+- **Content (10%)**: TF-IDF on title, author, subjects and publisher  
+- **Markov chain (15%)**: what usually comes next (Harry Potter 1 → Harry Potter 2)  
+
+Books borrowed twice or more get a small boost, and the first 5 slots are kept for recency picks.
+
+# *What I learned*  
+
+- Understanding the domain beat fancy algorithms. A library is not an online shop!  
+- Don't follow "best practices" blindly; test the opposite.  
+- Beware of overfitting to validation: one micro-tuned version scored better locally but dropped 13% on Kaggle.  
+
+I also built a small Streamlit app on top of the model with a reading dashboard, a "Why this book?" explanation, a reading persona and a mode for new readers.
