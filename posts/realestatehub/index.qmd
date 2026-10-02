@@ -1,0 +1,39 @@
+---
+title: "RealEstateHub"
+author: "Nikhil"
+date: "2025-12-14"
+categories: [Java, Web, Docker]
+---
+RealEstateHub is a web platform where sellers can list properties and buyers can browse them and make offers. It is a Java project built with Jakarta EE.  
+
+[Code on Github](https://github.com/nikh123/RealEstateHub)
+
+# *What you can do*  
+
+There are two kinds of users and each one has their own pages:  
+
+- **Sellers** can add and edit properties, see all their listings and accept or reject the offers they receive.  
+- **Buyers** can search properties, make offers and follow the status of their offers.  
+
+Both have a login, a registration page and account settings. When the status of an offer changes, the buyer and the seller get an email through the Brevo API.  
+
+# *How it is built*  
+
+The project is split in three parts:  
+
+- **Domain model:** plain Java classes like `Property`, `Buyer`, `Seller`, `Offer` and `Message`, with JUnit tests.  
+- **Web service:** a REST API with `/buyers`, `/sellers` and `/offers` resources.  
+- **Web application:** the pages, written with JSF (`.xhtml`) and backing beans.  
+
+Everything runs in Docker with a MySQL database and a Payara server:
+```
+services:
+  mysql:
+    image: mysql:8.0
+  payara:
+    image: payara/server-full:6.2025.8-jdk17
+    depends_on:
+      mysql:
+        condition: service_healthy
+```
+To try it, build the two `.war` files with Maven and run `docker compose up`. Payara picks up the apps automatically.

@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nikhil">
-<meta name="dcterms.date" content="2022-10-29">
+<meta name="dcterms.date" content="2026-04-05">
 
-<title>Github – Nikhil’s blog</title>
+<title>CineMatch: a movie recommender – Nikhil’s blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,10 +120,11 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Github</h1>
+      <h1 class="title">CineMatch: a movie recommender</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">information</div>
-                <div class="quarto-category">General</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">Machine Learning</div>
+                <div class="quarto-category">Google Cloud</div>
               </div>
                   </div>
   </div>
@@ -141,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 29, 2022</p>
+        <p class="date">April 5, 2026</p>
       </div>
     </div>
     
@@ -160,32 +161,40 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><img src="github.jpg" class="img-fluid"></p>
-<section id="github" class="level1">
-<h1><em>Github</em></h1>
-<p>Git is an open source software used to keep up with the changes in files and to colaborate between programmers. Here are some basic commands for git:<br>
-<code>git add.</code> Usage: git add [file] . . .<br>
-<code>git commit.</code> Usage: git commit -m “[ Type in the commit message].</p>
+<p>CineMatch is a movie recommendation web app I built for an assignment in the Cloud and Advanced Analytics course. You pick a few movies you like and it suggests what to watch next.</p>
+<p><a href="https://cinematch-frontend-97118476415.europe-west6.run.app">Live app</a> · <a href="https://github.com/nikh123/cinematch">Code on Github</a></p>
+<section id="how-it-is-built" class="level1">
+<h1><em>How it is built</em></h1>
+<p>The app has two parts and both run in Docker containers on Google Cloud Run:</p>
+<ul>
+<li><strong>Backend (Flask):</strong> a REST API that talks to BigQuery ML, Elasticsearch and the TMDB API.<br>
+</li>
+<li><strong>Frontend (Streamlit):</strong> the page where you search, filter and pick your movies.</li>
+</ul>
 </section>
-<section id="create-a-repository-in-github" class="level1">
-<h1><em>Create a repository in Github</em></h1>
-<p>create a folder using <code>mkdir</code>and “name” it then use <code>cd</code>+ “name” to change the directory. Once in the directory run <code>git init</code> and exlplore all the files and folder git.</p>
+<section id="features" class="level1">
+<h1><em>Features</em></h1>
+<ul>
+<li>Autocomplete search with Elasticsearch (<code>match_phrase_prefix</code>)<br>
+</li>
+<li>Filters for genre, language, country, year and rating<br>
+</li>
+<li>Posters, overview and cast from the TMDB API<br>
+</li>
+<li>Recommendations from a BigQuery ML matrix factorisation model</li>
+</ul>
 </section>
-<section id="create-an-empty-file" class="level1">
-<h1><em>Create an empty file</em></h1>
-<p>Create a new file using <code>touch</code>“name”.txt and using <code>vim</code> “name”.txt write some information.</p>
-</section>
-<section id="new-repositry-in-github" class="level1">
-<h1><em>New repositry in Github</em></h1>
-<p>Create a new repositry in Github “name” and make sure it is public.</p>
-</section>
-<section id="public-key-private-key" class="level1">
-<h1><em>Public key/ Private key</em></h1>
-<p>We will generate our key using <code>ssh-keygen -t ed25519</code> then we leave this directory using <code>cd</code>. To read our key we us <code>cat ~/.ssh/id_ed25519.pub</code> then copy the key and paste it under New SSH key in SSH and GPG key in the GitHub settings give it a “name” and create it.</p>
-</section>
-<section id="upload-to-new-repo" class="level1">
-<h1><em>Upload to new repo</em></h1>
-<p>Use <code>cd cloud/project/name</code> to get into your directory and then use <code>git add .</code> to uplaod. Next you will be using <code>git config --global user.email "your_email@example.com"</code>. Then use <code>git commit -m</code> + ”name”“ and finally use <code>git push origin master</code> to upload it to Github. If it shows that the there is an error in uploading to the gihub using <code>git push origin master</code> then you can override and forcefully upload by using <code>git push origin master -f</code>.</p>
+<section id="how-the-recommendations-work" class="level1">
+<h1><em>How the recommendations work</em></h1>
+<p>First I look for users who liked the same movies as you. A movie counts as “liked” if the user gave it at least 0.7 (ratings are scaled from 0 to 1). The more of your movies a user liked, the more similar they are to you.</p>
+<pre><code>SELECT userId, COUNT(*) AS common_count
+FROM ratings
+WHERE movieId IN (&lt;selected_ids&gt;) AND rating_im &gt;= 0.7
+GROUP BY userId
+ORDER BY common_count DESC
+LIMIT 10</code></pre>
+<p>Those 10 users are passed to <code>ML.RECOMMEND</code>. Each user’s predicted ratings are weighted by their <code>common_count</code>, so the users closest to you have more say. Finally, movies that share genres with the ones you picked get a boost of <code>1 + 0.5 × number of shared genres</code>.</p>
+<pre><code>score(m) = [ Σ_u  r̂(u,m) · w_u ] / [ Σ_u  w_u ]  ×  genre_boost(m)</code></pre>
 
 
 </section>

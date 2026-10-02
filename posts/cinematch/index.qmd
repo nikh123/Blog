@@ -1,0 +1,39 @@
+---
+title: "CineMatch: a movie recommender"
+author: "Nikhil"
+date: "2026-04-05"
+categories: [Python, Machine Learning, Google Cloud]
+---
+CineMatch is a movie recommendation web app I built for an assignment in the Cloud and Advanced Analytics course. You pick a few movies you like and it suggests what to watch next.  
+
+[Live app](https://cinematch-frontend-97118476415.europe-west6.run.app) · [Code on Github](https://github.com/nikh123/cinematch)
+
+# *How it is built*  
+
+The app has two parts and both run in Docker containers on Google Cloud Run:  
+
+- **Backend (Flask):** a REST API that talks to BigQuery ML, Elasticsearch and the TMDB API.  
+- **Frontend (Streamlit):** the page where you search, filter and pick your movies.  
+
+# *Features*  
+
+- Autocomplete search with Elasticsearch (`match_phrase_prefix`)  
+- Filters for genre, language, country, year and rating  
+- Posters, overview and cast from the TMDB API  
+- Recommendations from a BigQuery ML matrix factorisation model  
+
+# *How the recommendations work*  
+
+First I look for users who liked the same movies as you. A movie counts as "liked" if the user gave it at least 0.7 (ratings are scaled from 0 to 1). The more of your movies a user liked, the more similar they are to you.
+```
+SELECT userId, COUNT(*) AS common_count
+FROM ratings
+WHERE movieId IN (<selected_ids>) AND rating_im >= 0.7
+GROUP BY userId
+ORDER BY common_count DESC
+LIMIT 10
+```
+Those 10 users are passed to `ML.RECOMMEND`. Each user's predicted ratings are weighted by their `common_count`, so the users closest to you have more say. Finally, movies that share genres with the ones you picked get a boost of `1 + 0.5 × number of shared genres`.
+```
+score(m) = [ Σ_u  r̂(u,m) · w_u ] / [ Σ_u  w_u ]  ×  genre_boost(m)
+```

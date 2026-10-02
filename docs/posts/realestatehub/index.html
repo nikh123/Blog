@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nikhil">
-<meta name="dcterms.date" content="2022-10-29">
+<meta name="dcterms.date" content="2025-12-14">
 
-<title>Github – Nikhil’s blog</title>
+<title>RealEstateHub – Nikhil’s blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,10 +120,11 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Github</h1>
+      <h1 class="title">RealEstateHub</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">information</div>
-                <div class="quarto-category">General</div>
+                <div class="quarto-category">Java</div>
+                <div class="quarto-category">Web</div>
+                <div class="quarto-category">Docker</div>
               </div>
                   </div>
   </div>
@@ -141,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 29, 2022</p>
+        <p class="date">December 14, 2025</p>
       </div>
     </div>
     
@@ -160,32 +161,38 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><img src="github.jpg" class="img-fluid"></p>
-<section id="github" class="level1">
-<h1><em>Github</em></h1>
-<p>Git is an open source software used to keep up with the changes in files and to colaborate between programmers. Here are some basic commands for git:<br>
-<code>git add.</code> Usage: git add [file] . . .<br>
-<code>git commit.</code> Usage: git commit -m “[ Type in the commit message].</p>
+<p>RealEstateHub is a web platform where sellers can list properties and buyers can browse them and make offers. It is a Java project built with Jakarta EE.</p>
+<p><a href="https://github.com/nikh123/RealEstateHub">Code on Github</a></p>
+<section id="what-you-can-do" class="level1">
+<h1><em>What you can do</em></h1>
+<p>There are two kinds of users and each one has their own pages:</p>
+<ul>
+<li><strong>Sellers</strong> can add and edit properties, see all their listings and accept or reject the offers they receive.<br>
+</li>
+<li><strong>Buyers</strong> can search properties, make offers and follow the status of their offers.</li>
+</ul>
+<p>Both have a login, a registration page and account settings. When the status of an offer changes, the buyer and the seller get an email through the Brevo API.</p>
 </section>
-<section id="create-a-repository-in-github" class="level1">
-<h1><em>Create a repository in Github</em></h1>
-<p>create a folder using <code>mkdir</code>and “name” it then use <code>cd</code>+ “name” to change the directory. Once in the directory run <code>git init</code> and exlplore all the files and folder git.</p>
-</section>
-<section id="create-an-empty-file" class="level1">
-<h1><em>Create an empty file</em></h1>
-<p>Create a new file using <code>touch</code>“name”.txt and using <code>vim</code> “name”.txt write some information.</p>
-</section>
-<section id="new-repositry-in-github" class="level1">
-<h1><em>New repositry in Github</em></h1>
-<p>Create a new repositry in Github “name” and make sure it is public.</p>
-</section>
-<section id="public-key-private-key" class="level1">
-<h1><em>Public key/ Private key</em></h1>
-<p>We will generate our key using <code>ssh-keygen -t ed25519</code> then we leave this directory using <code>cd</code>. To read our key we us <code>cat ~/.ssh/id_ed25519.pub</code> then copy the key and paste it under New SSH key in SSH and GPG key in the GitHub settings give it a “name” and create it.</p>
-</section>
-<section id="upload-to-new-repo" class="level1">
-<h1><em>Upload to new repo</em></h1>
-<p>Use <code>cd cloud/project/name</code> to get into your directory and then use <code>git add .</code> to uplaod. Next you will be using <code>git config --global user.email "your_email@example.com"</code>. Then use <code>git commit -m</code> + ”name”“ and finally use <code>git push origin master</code> to upload it to Github. If it shows that the there is an error in uploading to the gihub using <code>git push origin master</code> then you can override and forcefully upload by using <code>git push origin master -f</code>.</p>
+<section id="how-it-is-built" class="level1">
+<h1><em>How it is built</em></h1>
+<p>The project is split in three parts:</p>
+<ul>
+<li><strong>Domain model:</strong> plain Java classes like <code>Property</code>, <code>Buyer</code>, <code>Seller</code>, <code>Offer</code> and <code>Message</code>, with JUnit tests.<br>
+</li>
+<li><strong>Web service:</strong> a REST API with <code>/buyers</code>, <code>/sellers</code> and <code>/offers</code> resources.<br>
+</li>
+<li><strong>Web application:</strong> the pages, written with JSF (<code>.xhtml</code>) and backing beans.</li>
+</ul>
+<p>Everything runs in Docker with a MySQL database and a Payara server:</p>
+<pre><code>services:
+  mysql:
+    image: mysql:8.0
+  payara:
+    image: payara/server-full:6.2025.8-jdk17
+    depends_on:
+      mysql:
+        condition: service_healthy</code></pre>
+<p>To try it, build the two <code>.war</code> files with Maven and run <code>docker compose up</code>. Payara picks up the apps automatically.</p>
 
 
 </section>

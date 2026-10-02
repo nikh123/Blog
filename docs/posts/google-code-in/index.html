@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nikhil">
-<meta name="dcterms.date" content="2022-10-29">
+<meta name="dcterms.date" content="2019-12-29">
 
-<title>Github – Nikhil’s blog</title>
+<title>My Google Code-in R projects – Nikhil’s blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,10 +120,11 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Github</h1>
+      <h1 class="title">My Google Code-in R projects</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">information</div>
-                <div class="quarto-category">General</div>
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">application</div>
+                <div class="quarto-category">Google Code-in</div>
               </div>
                   </div>
   </div>
@@ -141,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 29, 2022</p>
+        <p class="date">December 29, 2019</p>
       </div>
     </div>
     
@@ -160,32 +161,63 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><img src="github.jpg" class="img-fluid"></p>
-<section id="github" class="level1">
-<h1><em>Github</em></h1>
-<p>Git is an open source software used to keep up with the changes in files and to colaborate between programmers. Here are some basic commands for git:<br>
-<code>git add.</code> Usage: git add [file] . . .<br>
-<code>git commit.</code> Usage: git commit -m “[ Type in the commit message].</p>
+<p>In 2019 I took part in Google Code-in and did a series of tasks for the R Project for Statistical Computing. Here is a quick tour of them.</p>
+<section id="reading-and-writing-csv-data" class="level1">
+<h1><em>Reading and writing CSV data</em></h1>
+<p>My first task was about reading a CSV into a data frame, adding rows and columns and writing it back out. You can even read a CSV straight from the internet. <a href="https://github.com/nikh123/code-in">Code</a></p>
+<pre><code>T2 = data.frame(name = c("Nikhil","Roja","Jitendra","Diksha","Krishna"),
+                age = c(17,30,21,28,35),
+                class = c("2M1","2M2","2M3","2M4","2M5"))
+T2$Height = c(140,180,130,120,130)
+write.csv(T2, "students.csv")
+
+X = read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", header = FALSE)
+head(X)</code></pre>
 </section>
-<section id="create-a-repository-in-github" class="level1">
-<h1><em>Create a repository in Github</em></h1>
-<p>create a folder using <code>mkdir</code>and “name” it then use <code>cd</code>+ “name” to change the directory. Once in the directory run <code>git init</code> and exlplore all the files and folder git.</p>
+<section id="exploring-e-commerce-data" class="level1">
+<h1><em>Exploring e-commerce data</em></h1>
+<p>With <code>dplyr</code> I explored an e-commerce dataset with 1594 observations and 45 variables. Brisbane had the most visitors among the Australian cities. <a href="https://github.com/nikh123/Exploring-E-commerce-data-Task2-">Code</a></p>
+<pre><code>library(dplyr)
+subset(ecommerce, country == "Australia") %&gt;%
+  group_by(city) %&gt;%
+  summarise(behavNumVisits = sum(behavNumVisits)) %&gt;%
+  arrange(desc(behavNumVisits))</code></pre>
 </section>
-<section id="create-an-empty-file" class="level1">
-<h1><em>Create an empty file</em></h1>
-<p>Create a new file using <code>touch</code>“name”.txt and using <code>vim</code> “name”.txt write some information.</p>
+<section id="d-scatter-plot-with-lattice" class="level1">
+<h1><em>3D scatter plot with Lattice</em></h1>
+<p>The <code>cloud</code> function from <code>lattice</code> makes a 3D scatter plot. <a href="https://github.com/nikh123/Data-Visualization-in-R-with-Lattice-Graphics">Code</a></p>
+<pre><code>library(lattice)
+Lattice_data = data.frame(w = c(16,90,46,30), x = c(5,10,20,40),
+                          y = c(23,89,66,48), z = c("a","b","c","d"))
+cloud(w ~ x * y, groups = Lattice_data$z, Lattice_data)</code></pre>
+<p><img src="lattice.png" class="img-fluid"></p>
 </section>
-<section id="new-repositry-in-github" class="level1">
-<h1><em>New repositry in Github</em></h1>
-<p>Create a new repositry in Github “name” and make sure it is public.</p>
+<section id="interactive-plot-with-animint2" class="level1">
+<h1><em>Interactive plot with animint2</em></h1>
+<p>Using the WorldBank data I plotted life expectancy against fertility rate in 1975 and turned it into an interactive chart that I published as a gist. <a href="https://github.com/nikh123/Creating-an-interactive-data-visualization-using-animint2">Code</a></p>
+<pre><code>library(animint2)
+data(WorldBank, package = "animint2")
+WorldBank1975 = subset(WorldBank, year == 1975)
+scatter = ggplot() +
+  geom_point(mapping = aes(x = life.expectancy, y = fertility.rate, color = region),
+             data = WorldBank1975)
+animint2gist(animint(scatter))</code></pre>
+<p><img src="animint2.png" class="img-fluid"></p>
 </section>
-<section id="public-key-private-key" class="level1">
-<h1><em>Public key/ Private key</em></h1>
-<p>We will generate our key using <code>ssh-keygen -t ed25519</code> then we leave this directory using <code>cd</code>. To read our key we us <code>cat ~/.ssh/id_ed25519.pub</code> then copy the key and paste it under New SSH key in SSH and GPG key in the GitHub settings give it a “name” and create it.</p>
+<section id="r-package-downloads-in-2018" class="level1">
+<h1><em>R package downloads in 2018</em></h1>
+<p>The cranlogs API tells you how many times R packages were downloaded. With <code>jsonlite</code> I pulled the totals for 2018, and also for each half of the year, and saved them as CSV. <a href="https://github.com/nikh123/Summary-of-R-packages-download-in-2018">Code</a></p>
+<pre><code>library(jsonlite)
+Data = fromJSON("https://cranlogs.r-pkg.org/downloads/total/2018-01-01:2018-12-31")
+write.csv(Data, "Data.csv")</code></pre>
 </section>
-<section id="upload-to-new-repo" class="level1">
-<h1><em>Upload to new repo</em></h1>
-<p>Use <code>cd cloud/project/name</code> to get into your directory and then use <code>git add .</code> to uplaod. Next you will be using <code>git config --global user.email "your_email@example.com"</code>. Then use <code>git commit -m</code> + ”name”“ and finally use <code>git push origin master</code> to upload it to Github. If it shows that the there is an error in uploading to the gihub using <code>git push origin master</code> then you can override and forcefully upload by using <code>git push origin master -f</code>.</p>
+<section id="a-hexagon-logo-for-an-r-package" class="level1">
+<h1><em>A hexagon logo for an R package</em></h1>
+<p>Every good R package needs a hex sticker! The <code>hexSticker</code> package makes one from any image. <a href="https://github.com/nikh123/Creat-a-Hexagone-logo-for-an-R-package">Code</a></p>
+<pre><code>library(hexSticker)
+sticker("IMG_0039.png", package = "", p_size = 8,
+        s_x = 1, s_y = 1, s_width = .6, filename = "aa.png")</code></pre>
+<p><img src="hexsticker.png" class="img-fluid"></p>
 
 
 </section>

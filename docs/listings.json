@@ -2,9 +2,14 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/weather-station/index.html",
+      "/posts/cinematch/index.html",
+      "/posts/realestatehub/index.html",
+      "/posts/supermarket/index.html",
       "/posts/Github/index.html",
+      "/posts/Binning/index.html",
       "/posts/cricket/index.html",
-      "/posts/Binning/index.html"
+      "/posts/google-code-in/index.html"
     ]
   }
 ]

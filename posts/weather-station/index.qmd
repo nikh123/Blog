@@ -1,0 +1,45 @@
+---
+title: "IoT Weather Station"
+author: "Nikhil"
+date: "2026-05-26"
+categories: [IoT, Python, Google Cloud, AI]
+---
+For the Cloud and Advanced Analytics course at UNIL HEC, my teammate Zéa and I built an indoor/outdoor weather monitor. It runs on an M5Stack Core2, stores its readings in Google Cloud, and has a live dashboard that you can chat with.  
+
+▶️ [Demo video on YouTube](https://youtu.be/C4fnzHHq-S8) · [Code on Github](https://github.com/nikh123/weather-station)
+
+# *How it works*  
+
+The device reads temperature, humidity, eCO₂ and TVOC from its sensors and sends them to a Flask API running on Cloud Run. The API saves everything in BigQuery and fetches the outdoor weather from OpenWeatherMap. A Streamlit dashboard then reads the data straight from BigQuery.
+```
+M5Stack Core2  --HTTP/JSON-->  Flask middleware (Cloud Run)  --SQL-->  BigQuery
+                                  • OpenWeatherMap                        |
+                                  • Google Maps Geolocation               v
+                                  • Google TTS / STT            Streamlit dashboard
+                                  • Vertex AI (Gemini)          (Cloud Run)
+```
+
+# *The device*  
+
+The M5Stack has a 4 page touch screen and you swipe between the pages:  
+
+- Page 0: indoor and outdoor temperature and humidity  
+- Page 1: air quality (CO₂, TVOC, AQI, PM2.5, NO₂…)  
+- Page 2: a 5 day forecast  
+- Page 3: a voice assistant  
+
+Some of my favourite features:  
+
+- **Voice assistant:** tap the screen and ask a question. The recording goes through Google Speech-to-Text, Gemini answers it and the answer is played back with Text-to-Speech.  
+- **Rain reminder:** in the morning it says *"Take an umbrella!"* when rain is forecast.  
+- **Presence detection:** a PIR sensor notices when someone walks by and the device reads out the weather.  
+- **WiFi geolocation:** the device scans nearby WiFi networks and sends them to the Google Maps Geolocation API to find out where it is, so the outdoor weather is always for the right place.  
+- **WiFi setup wizard:** an on-screen keyboard to connect to a new network.  
+
+# *My part*  
+
+I set up the project structure and wrote the middleware API (Flask routes, BigQuery, the voice pipeline and geolocation). On the device I did the firmware logic: NTP time sync, the PIR sensor, sleep and backlight, retry logic, the WiFi wizard and the voice page. I also built the AI chat on the dashboard and did the security hardening.  
+
+# *Dashboard*  
+
+The [dashboard](https://weather-dashboard-66211385950.europe-west1.run.app) has a live page with gauges, outdoor weather, AQI, UV index and the forecast, plus an analytics page with historical charts. At the bottom there is an AI chat where you can ask things like *"What's the weather in Tokyo?"* or *"What was the CO₂ yesterday?"* and it answers with the live sensor data and the history from BigQuery.

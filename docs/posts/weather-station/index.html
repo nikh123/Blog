@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Nikhil">
-<meta name="dcterms.date" content="2022-10-29">
+<meta name="dcterms.date" content="2026-05-26">
 
-<title>Github – Nikhil’s blog</title>
+<title>IoT Weather Station – Nikhil’s blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,10 +120,12 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Github</h1>
+      <h1 class="title">IoT Weather Station</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">information</div>
-                <div class="quarto-category">General</div>
+                <div class="quarto-category">IoT</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">Google Cloud</div>
+                <div class="quarto-category">AI</div>
               </div>
                   </div>
   </div>
@@ -141,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 29, 2022</p>
+        <p class="date">May 26, 2026</p>
       </div>
     </div>
     
@@ -160,32 +162,49 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><img src="github.jpg" class="img-fluid"></p>
-<section id="github" class="level1">
-<h1><em>Github</em></h1>
-<p>Git is an open source software used to keep up with the changes in files and to colaborate between programmers. Here are some basic commands for git:<br>
-<code>git add.</code> Usage: git add [file] . . .<br>
-<code>git commit.</code> Usage: git commit -m “[ Type in the commit message].</p>
+<p>For the Cloud and Advanced Analytics course at UNIL HEC, my teammate Zéa and I built an indoor/outdoor weather monitor. It runs on an M5Stack Core2, stores its readings in Google Cloud, and has a live dashboard that you can chat with.</p>
+<p>▶️ <a href="https://youtu.be/C4fnzHHq-S8">Demo video on YouTube</a> · <a href="https://github.com/nikh123/weather-station">Code on Github</a></p>
+<section id="how-it-works" class="level1">
+<h1><em>How it works</em></h1>
+<p>The device reads temperature, humidity, eCO₂ and TVOC from its sensors and sends them to a Flask API running on Cloud Run. The API saves everything in BigQuery and fetches the outdoor weather from OpenWeatherMap. A Streamlit dashboard then reads the data straight from BigQuery.</p>
+<pre><code>M5Stack Core2  --HTTP/JSON--&gt;  Flask middleware (Cloud Run)  --SQL--&gt;  BigQuery
+                                  • OpenWeatherMap                        |
+                                  • Google Maps Geolocation               v
+                                  • Google TTS / STT            Streamlit dashboard
+                                  • Vertex AI (Gemini)          (Cloud Run)</code></pre>
 </section>
-<section id="create-a-repository-in-github" class="level1">
-<h1><em>Create a repository in Github</em></h1>
-<p>create a folder using <code>mkdir</code>and “name” it then use <code>cd</code>+ “name” to change the directory. Once in the directory run <code>git init</code> and exlplore all the files and folder git.</p>
+<section id="the-device" class="level1">
+<h1><em>The device</em></h1>
+<p>The M5Stack has a 4 page touch screen and you swipe between the pages:</p>
+<ul>
+<li>Page 0: indoor and outdoor temperature and humidity<br>
+</li>
+<li>Page 1: air quality (CO₂, TVOC, AQI, PM2.5, NO₂…)<br>
+</li>
+<li>Page 2: a 5 day forecast<br>
+</li>
+<li>Page 3: a voice assistant</li>
+</ul>
+<p>Some of my favourite features:</p>
+<ul>
+<li><strong>Voice assistant:</strong> tap the screen and ask a question. The recording goes through Google Speech-to-Text, Gemini answers it and the answer is played back with Text-to-Speech.<br>
+</li>
+<li><strong>Rain reminder:</strong> in the morning it says <em>“Take an umbrella!”</em> when rain is forecast.<br>
+</li>
+<li><strong>Presence detection:</strong> a PIR sensor notices when someone walks by and the device reads out the weather.<br>
+</li>
+<li><strong>WiFi geolocation:</strong> the device scans nearby WiFi networks and sends them to the Google Maps Geolocation API to find out where it is, so the outdoor weather is always for the right place.<br>
+</li>
+<li><strong>WiFi setup wizard:</strong> an on-screen keyboard to connect to a new network.</li>
+</ul>
 </section>
-<section id="create-an-empty-file" class="level1">
-<h1><em>Create an empty file</em></h1>
-<p>Create a new file using <code>touch</code>“name”.txt and using <code>vim</code> “name”.txt write some information.</p>
+<section id="my-part" class="level1">
+<h1><em>My part</em></h1>
+<p>I set up the project structure and wrote the middleware API (Flask routes, BigQuery, the voice pipeline and geolocation). On the device I did the firmware logic: NTP time sync, the PIR sensor, sleep and backlight, retry logic, the WiFi wizard and the voice page. I also built the AI chat on the dashboard and did the security hardening.</p>
 </section>
-<section id="new-repositry-in-github" class="level1">
-<h1><em>New repositry in Github</em></h1>
-<p>Create a new repositry in Github “name” and make sure it is public.</p>
-</section>
-<section id="public-key-private-key" class="level1">
-<h1><em>Public key/ Private key</em></h1>
-<p>We will generate our key using <code>ssh-keygen -t ed25519</code> then we leave this directory using <code>cd</code>. To read our key we us <code>cat ~/.ssh/id_ed25519.pub</code> then copy the key and paste it under New SSH key in SSH and GPG key in the GitHub settings give it a “name” and create it.</p>
-</section>
-<section id="upload-to-new-repo" class="level1">
-<h1><em>Upload to new repo</em></h1>
-<p>Use <code>cd cloud/project/name</code> to get into your directory and then use <code>git add .</code> to uplaod. Next you will be using <code>git config --global user.email "your_email@example.com"</code>. Then use <code>git commit -m</code> + ”name”“ and finally use <code>git push origin master</code> to upload it to Github. If it shows that the there is an error in uploading to the gihub using <code>git push origin master</code> then you can override and forcefully upload by using <code>git push origin master -f</code>.</p>
+<section id="dashboard" class="level1">
+<h1><em>Dashboard</em></h1>
+<p>The <a href="https://weather-dashboard-66211385950.europe-west1.run.app">dashboard</a> has a live page with gauges, outdoor weather, AQI, UV index and the forecast, plus an analytics page with historical charts. At the bottom there is an AI chat where you can ask things like <em>“What’s the weather in Tokyo?”</em> or <em>“What was the CO₂ yesterday?”</em> and it answers with the live sensor data and the history from BigQuery.</p>
 
 
 </section>
